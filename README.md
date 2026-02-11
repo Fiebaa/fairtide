@@ -1,165 +1,143 @@
-# fairify
+# Fairify
 
-**A SpecWeave project** - where specifications drive development.
+A minimalistic API that calculates fair prices for consumables based on income and shop location.
 
-## 🚀 Quick Start
+## How It Works
 
-Your project is initialized! Now describe what you want to build.
+Fairify adjusts prices using two factors:
 
-### Next Steps
+- **Income factor** — lower-income users pay proportionally less
+- **Location factor** — prices reflect the local cost of living
 
-1. **Open your AI assistant** (Claude Code, Cursor, Windsurf, or any AI-powered IDE)
+```
+fairPrice = basePrice * incomeFactor * locationFactor
+```
 
-2. **Use SpecWeave slash commands** to start building:
+### Default Income Brackets
+
+| Annual Income | Factor |
+|---------------|--------|
+| Up to 20,000  | 0.70   |
+| 20,001-40,000 | 0.85   |
+| 40,001-70,000 | 1.00   |
+| 70,001-100,000| 1.10   |
+| Over 100,000  | 1.20   |
+
+## Prerequisites
+
+- [Bun](https://bun.sh) v1.2+
+
+## Setup
 
 ```bash
-# Plan a new feature
-/specweave:increment "user authentication with JWT"
+# Clone the repository
+git clone <repo-url>
+cd fairify
 
-# Execute the implementation
-/specweave:do
+# Install dependencies
+bun install
 
-# Check progress
-/specweave:progress
+# Set up the database
+bun run db:migrate
+bun run db:seed
 
-# Close when done
-/specweave:done 0001
+# Start the development server
+bun run dev
 ```
 
-3. **Or describe your project** in natural language (works with slash command workflows):
+The API will be available at `http://localhost:3000`.
+
+## API Endpoints
+
+### Calculate Fair Price
 
 ```
-"Build a real estate listing platform with search, images, and admin dashboard"
-"Create a task management API with authentication"
-"Build an e-commerce platform with Stripe payments"
+POST /v1/calculate
 ```
 
-4. **SpecWeave will automatically**:
-   - Detect your tech stack (or ask you to choose)
-   - Use the right agents & skills (all pre-installed!)
-   - Create strategic documentation
-   - Generate specifications (spec.md, plan.md, tasks.md)
-   - Guide implementation
-   - Generate tests
+**Request:**
 
-That's it! All components ready - just use `/specweave:increment` to start!
-
----
-
-## 📁 Project Structure
-
-```
-fairify/
-├── .specweave/             # SpecWeave framework
-│   ├── config.json         # Project configuration
-│   ├── increments/         # Features (created via /specweave:increment)
-│   │   └── 0001-feature/
-│   │       ├── spec.md     # WHAT & WHY
-│   │       ├── plan.md     # HOW
-│   │       ├── tasks.md    # Implementation steps
-│   │       ├── tests.md    # Test strategy
-│   │       ├── logs/       # Execution logs
-│   │       ├── scripts/    # Helper scripts
-│   │       └── reports/    # Analysis reports
-│   ├── docs/               # Strategic documentation
-│   │   ├── internal/       # Internal docs (strategy, architecture)
-│   │   └── public/         # Published docs
-│   └── tests/              # Centralized test repository
-├── .claude/                # Claude Code integration (optional)
-│   ├── commands/           # Slash commands (10 installed)
-│   ├── agents/             # AI agents (10 installed)
-│   └── skills/             # AI skills (35+ installed)
-├── CLAUDE.md               # Instructions for AI assistant
-└── README.md               # This file
+```json
+{
+  "basePrice": 10.00,
+  "annualIncome": 35000,
+  "locationId": "berlin-de"
+}
 ```
 
----
+**Response:**
 
-## 🎯 What is SpecWeave?
-
-SpecWeave is a specification-first development framework where:
-- **Specifications are the source of truth** (code follows specs, not reverse)
-- **Slash commands drive workflow** (`/specweave:increment` → `/specweave:do` → `/specweave:done`)
-- **AI agents work autonomously** (PM, Architect, Security, QA, DevOps)
-- **All components pre-installed** (10 agents + 35+ skills ready!)
-- **Works with ANY tech stack** (TypeScript, Python, Go, Rust, Java, .NET, etc.)
-- **Works with multiple AI assistants** (Claude Code, Cursor, Windsurf, etc.)
-
----
-
-## 🔧 Core Workflow
-
-```
-/specweave:increment "feature" → /specweave:do → /specweave:progress → /specweave:done → repeat
+```json
+{
+  "fairPrice": 8.93,
+  "breakdown": {
+    "basePrice": 10.00,
+    "incomeFactor": 0.85,
+    "locationFactor": 1.05,
+    "fairPrice": 8.93
+  }
+}
 ```
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `/specweave:increment "feature"` | Plan new increment | Starting new feature |
-| `/specweave:do` | Execute tasks | Ready to implement |
-| `/specweave:progress` | Check status | Want to see progress |
-| `/specweave:validate 0001` | Validate quality | Before completion |
-| `/specweave:done 0001` | Close increment | Feature finished |
-| `/specweave:sync-github` | Sync to GitHub | Export to issues |
-| `/specweave:sync-jira` | Sync to Jira | Export to Jira |
-
-See `CLAUDE.md` for complete workflow guide.
-
----
-
-## 🚨 File Organization
-
-**Keep project root clean!** All AI-generated files go into increment folders:
+### Health Check
 
 ```
-✅ CORRECT:
-.specweave/increments/0001-auth/
-├── logs/execution.log
-├── scripts/migration.sql
-└── reports/analysis.md
-
-❌ WRONG:
-project-root/
-├── execution.log        # NO!
-├── migration.sql        # NO!
-└── analysis.md          # NO!
+GET /v1/health
 ```
 
----
+### API Documentation
 
-## 🤖 AI Assistant Compatibility
+Interactive Swagger UI is available at:
 
-SpecWeave works with:
-- ✅ **Claude Code** (recommended) - Full slash command support
-- ✅ **Cursor** - Slash commands via composer
-- ✅ **Windsurf** - Cascade mode compatible
-- ✅ **ChatGPT** - Via custom instructions
-- ✅ **Any AI IDE** - As long as it supports slash commands or custom prompts
-
-**Setup**: See `CLAUDE.md` for AI assistant instructions.
-
----
-
-## 📚 Learn More
-
-- **Documentation**: https://spec-weave.com
-- **GitHub**: https://github.com/anton-abyzov/specweave
-- **Quick Reference**: See `CLAUDE.md` in your project
-- **Examples**: Check `.specweave/docs/` after creating your first increment
-
----
-
-## 🏁 Ready to Build?
-
-**Start with your first feature**:
-```bash
-/specweave:increment "describe your feature here"
+```
+GET /v1/docs
 ```
 
-Or just describe what you want to build, and SpecWeave will guide you through the process! 🚀
+OpenAPI 3.1 spec at:
 
----
+```
+GET /v1/doc
+```
 
-**Documentation Philosophy**: {{DOCUMENTATION_APPROACH}}
+## Available Locations
 
-**Tech Stack**: Auto-detected from project files (package.json, requirements.txt, etc.)
+The database is seeded with 12 cities:
+
+| ID | City | Country | Cost of Living Index |
+|----|------|---------|---------------------|
+| zurich-ch | Zurich | CH | 1.35 |
+| new-york-us | New York | US | 1.25 |
+| london-gb | London | GB | 1.20 |
+| sydney-au | Sydney | AU | 1.15 |
+| tokyo-jp | Tokyo | JP | 1.10 |
+| vienna-at | Vienna | AT | 1.10 |
+| munich-de | Munich | DE | 1.08 |
+| berlin-de | Berlin | DE | 1.05 |
+| lisbon-pt | Lisbon | PT | 0.85 |
+| sao-paulo-br | Sao Paulo | BR | 0.75 |
+| bangkok-th | Bangkok | TH | 0.60 |
+| lagos-ng | Lagos | NG | 0.45 |
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start dev server with hot reload |
+| `bun run start` | Start production server |
+| `bun test` | Run tests |
+| `bun run db:generate` | Generate Drizzle migrations |
+| `bun run db:migrate` | Apply database migrations |
+| `bun run db:seed` | Seed location data |
+
+## Tech Stack
+
+- **Runtime**: Bun
+- **Framework**: Hono
+- **Database**: SQLite (via Drizzle ORM)
+- **Validation**: Zod
+- **API Docs**: OpenAPI 3.1 (auto-generated)
+- **Testing**: bun:test
+
+## License
+
+ISC
