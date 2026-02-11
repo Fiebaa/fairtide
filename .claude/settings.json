@@ -3,6 +3,8 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "enabledPlugins": {
-    "sw-backend@specweave": true
+    "sw-backend@specweave": true,
+    "commit-commands@claude-plugins-official": true,
+    "sw-infra@specweave": true
   }
 }

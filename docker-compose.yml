@@ -1,0 +1,18 @@
+services:
+  fairify:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - fairify-data:/app/data
+    environment:
+      - PORT=3000
+      - DB_PATH=/app/data/fairify.db
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-100}
+      - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-60000}
+    restart: unless-stopped
+
+volumes:
+  fairify-data:

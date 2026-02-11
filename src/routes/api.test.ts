@@ -2,11 +2,14 @@ import { describe, it, expect } from "bun:test";
 import { app } from "../index.js";
 
 describe("GET /v1/health", () => {
-  it("returns status ok", async () => {
+  it("returns status ok with DB connected", async () => {
     const res = await app.request("/v1/health");
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toEqual({ status: "ok", version: "0.1.0" });
+    expect(body.status).toBe("ok");
+    expect(body.version).toBe("0.1.0");
+    expect(body.db).toBe("connected");
+    expect(typeof body.uptime).toBe("number");
   });
 });
 
@@ -91,6 +94,32 @@ describe("POST /v1/calculate", () => {
     });
     const highBody = await high.json();
     expect(highBody.breakdown.incomeFactor).toBe(1.2);
+  });
+});
+
+describe("Middleware", () => {
+  it("includes X-Request-Id header on every response", async () => {
+    const res = await app.request("/v1/health");
+    const requestId = res.headers.get("X-Request-Id");
+    expect(requestId).toBeTruthy();
+    expect(requestId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    );
+  });
+
+  it("generates unique request IDs per request", async () => {
+    const res1 = await app.request("/v1/health");
+    const res2 = await app.request("/v1/health");
+    expect(res1.headers.get("X-Request-Id")).not.toBe(
+      res2.headers.get("X-Request-Id"),
+    );
+  });
+
+  it("includes CORS headers", async () => {
+    const res = await app.request("/v1/health", {
+      headers: { Origin: "https://example.com" },
+    });
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBeTruthy();
   });
 });
 

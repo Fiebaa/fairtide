@@ -118,6 +118,33 @@ The database is seeded with 12 cities:
 | bangkok-th | Bangkok | TH | 0.60 |
 | lagos-ng | Lagos | NG | 0.45 |
 
+## Docker
+
+Run with Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+The API will be available at `http://localhost:3000`.
+
+To customize, set environment variables in your shell or a `.env` file:
+
+```bash
+PORT=8080 LOG_LEVEL=debug docker compose up -d
+```
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Server port |
+| `DB_PATH` | `./data/fairify.db` | SQLite database path |
+| `LOG_LEVEL` | `info` | Log level (`debug`, `info`, `warn`, `error`) |
+| `CORS_ORIGIN` | `*` | Allowed origins (comma-separated or `*`) |
+| `RATE_LIMIT_MAX` | `100` | Max requests per window |
+| `RATE_LIMIT_WINDOW_MS` | `60000` | Rate limit window (ms) |
+
 ## Scripts
 
 | Command | Description |
