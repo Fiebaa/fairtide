@@ -4,6 +4,7 @@ import { compress } from "hono/compress";
 import { createRouter } from "./lib/app.js";
 import { healthRoute } from "./routes/health.js";
 import { calculateRoute } from "./routes/calculate.js";
+import { realmRouter } from "./routes/realms.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { requestId } from "./middleware/request-id.js";
 import { logger } from "./middleware/logger.js";
@@ -23,6 +24,7 @@ app.use(
     origin: config.corsOrigin === "*" ? "*" : config.corsOrigin.split(","),
   }),
 );
+// Rate limiting is handled per-realm in the rateLimit middleware
 app.use("/v1/calculate", rateLimit);
 
 app.onError(errorHandler);
@@ -30,6 +32,7 @@ app.onError(errorHandler);
 // Routes
 app.route("/v1", healthRoute);
 app.route("/v1", calculateRoute);
+app.route("/v1", realmRouter);
 
 // OpenAPI docs
 app.doc("/v1/doc", {

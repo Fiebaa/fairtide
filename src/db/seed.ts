@@ -1,7 +1,7 @@
 import { db } from "./index.js";
-import { locations } from "./schema.js";
+import { locations, realms } from "./schema.js";
 
-const seedData = [
+const locationData = [
   { id: "zurich-ch", name: "Zurich", country: "CH", costOfLivingIndex: 1.35 },
   { id: "new-york-us", name: "New York", country: "US", costOfLivingIndex: 1.25 },
   { id: "london-gb", name: "London", country: "GB", costOfLivingIndex: 1.20 },
@@ -16,5 +16,14 @@ const seedData = [
   { id: "lisbon-pt", name: "Lisbon", country: "PT", costOfLivingIndex: 0.85 },
 ];
 
-db.insert(locations).values(seedData).onConflictDoNothing().run();
-console.log(`Seeded ${seedData.length} locations.`);
+db.insert(locations).values(locationData).onConflictDoNothing().run();
+console.log(`Seeded ${locationData.length} locations.`);
+
+const demoRealm = {
+  id: "demo-cafe",
+  name: "Demo Cafe",
+  apiKey: "demo-api-key-for-testing-only-do-not-use-in-production",
+};
+
+db.insert(realms).values(demoRealm).onConflictDoNothing().run();
+console.log("Seeded demo realm (API key: demo-api-key-for-testing-only-do-not-use-in-production).");

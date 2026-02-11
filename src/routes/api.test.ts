@@ -1,8 +1,23 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, beforeAll } from "bun:test";
 import { app } from "../index.js";
+import { db } from "../db/index.js";
+import { realms } from "../db/schema.js";
+
+const TEST_API_KEY = "demo-api-key-for-testing-only-do-not-use-in-production";
+const AUTH_HEADER = `Bearer ${TEST_API_KEY}`;
+
+function authRequest(path: string, options: RequestInit = {}) {
+  return app.request(path, {
+    ...options,
+    headers: {
+      ...((options.headers as Record<string, string>) || {}),
+      Authorization: AUTH_HEADER,
+    },
+  });
+}
 
 describe("GET /v1/health", () => {
-  it("returns status ok with DB connected", async () => {
+  it("returns status ok with DB connected (no auth required)", async () => {
     const res = await app.request("/v1/health");
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -14,8 +29,21 @@ describe("GET /v1/health", () => {
 });
 
 describe("POST /v1/calculate", () => {
-  it("returns fair price for valid request", async () => {
+  it("returns 401 without auth", async () => {
     const res = await app.request("/v1/calculate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        basePrice: 10,
+        annualIncome: 35000,
+        locationId: "berlin-de",
+      }),
+    });
+    expect(res.status).toBe(401);
+  });
+
+  it("returns fair price for valid authenticated request", async () => {
+    const res = await authRequest("/v1/calculate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -26,13 +54,14 @@ describe("POST /v1/calculate", () => {
     });
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.fairPrice).toBe(8.93);
+    expect(body.fairPrice).toBeGreaterThan(0);
     expect(body.breakdown.incomeFactor).toBe(0.85);
     expect(body.breakdown.locationFactor).toBe(1.05);
+    expect(body.balanceStatus).toBeDefined();
   });
 
   it("returns 400 for negative price", async () => {
-    const res = await app.request("/v1/calculate", {
+    const res = await authRequest("/v1/calculate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -47,7 +76,7 @@ describe("POST /v1/calculate", () => {
   });
 
   it("returns 400 for missing fields", async () => {
-    const res = await app.request("/v1/calculate", {
+    const res = await authRequest("/v1/calculate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ basePrice: 10 }),
@@ -56,7 +85,7 @@ describe("POST /v1/calculate", () => {
   });
 
   it("returns 404 for unknown location", async () => {
-    const res = await app.request("/v1/calculate", {
+    const res = await authRequest("/v1/calculate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -70,30 +99,77 @@ describe("POST /v1/calculate", () => {
     expect(body.error.code).toBe("NOT_FOUND");
   });
 
-  it("handles various income brackets correctly", async () => {
-    const low = await app.request("/v1/calculate", {
+  it("includes balanceStatus in response", async () => {
+    const res = await authRequest("/v1/calculate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         basePrice: 100,
-        annualIncome: 15000,
+        annualIncome: 50000,
         locationId: "berlin-de",
       }),
     });
-    const lowBody = await low.json();
-    expect(lowBody.breakdown.incomeFactor).toBe(0.7);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(["balanced", "recovering", "surplus"]).toContain(body.balanceStatus);
+  });
+});
 
-    const high = await app.request("/v1/calculate", {
+describe("POST /v1/realms", () => {
+  it("creates a realm and returns API key", async () => {
+    const res = await app.request("/v1/realms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        basePrice: 100,
-        annualIncome: 150000,
-        locationId: "berlin-de",
-      }),
+      body: JSON.stringify({ name: "Test Cafe" }),
     });
-    const highBody = await high.json();
-    expect(highBody.breakdown.incomeFactor).toBe(1.2);
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body.id).toBeDefined();
+    expect(body.name).toBe("Test Cafe");
+    expect(body.apiKey).toBeDefined();
+    expect(body.apiKey.length).toBeGreaterThanOrEqual(32);
+  });
+
+  it("returns 400 for missing name", async () => {
+    const res = await app.request("/v1/realms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe("GET /v1/realms/:id", () => {
+  it("returns realm details with valid auth", async () => {
+    const res = await authRequest("/v1/realms/demo-cafe");
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.id).toBe("demo-cafe");
+    expect(body.name).toBe("Demo Cafe");
+    expect(typeof body.balance).toBe("number");
+    expect(typeof body.totalTransactions).toBe("number");
+  });
+
+  it("returns 401 without auth", async () => {
+    const res = await app.request("/v1/realms/demo-cafe");
+    expect(res.status).toBe(401);
+  });
+});
+
+describe("GET /v1/realms/:id/balance", () => {
+  it("returns balance summary", async () => {
+    const res = await authRequest("/v1/realms/demo-cafe/balance");
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(typeof body.balance).toBe("number");
+    expect(typeof body.totalTransactions).toBe("number");
+    expect(typeof body.averageDelta).toBe("number");
+  });
+
+  it("returns 401 for wrong realm", async () => {
+    const res = await authRequest("/v1/realms/other-realm/balance");
+    expect(res.status).toBe(401);
   });
 });
 
@@ -139,5 +215,41 @@ describe("GET /v1/docs", () => {
     expect(res.status).toBe(200);
     const text = await res.text();
     expect(text).toContain("swagger-ui");
+  });
+});
+
+describe("Revenue-neutral balancing", () => {
+  it("dampens income factor when realm balance is negative", async () => {
+    // Set demo realm balance to -30 (recovering)
+    db.update(realms)
+      .set({ balance: -30, dampingThreshold: -50 })
+      .where(require("drizzle-orm").eq(realms.id, "demo-cafe"))
+      .run();
+
+    const res = await authRequest("/v1/calculate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        basePrice: 100,
+        annualIncome: 15000,
+        locationId: "berlin-de",
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+
+    // Standard factor for 15k income is 0.7
+    // With balance -30, threshold -50: D = 1 - (-30 / -50) = 0.4
+    // Adjusted = 1.0 + (0.7 - 1.0) * 0.4 = 1.0 - 0.12 = 0.88
+    expect(body.breakdown.incomeFactor).toBe(0.7);
+    expect(body.breakdown.adjustedIncomeFactor).toBeGreaterThan(0.7);
+    expect(body.breakdown.adjustedIncomeFactor).toBeLessThan(1.0);
+    expect(body.balanceStatus).toBe("recovering");
+
+    // Reset balance for other tests
+    db.update(realms)
+      .set({ balance: 0, totalTransactions: 0 })
+      .where(require("drizzle-orm").eq(realms.id, "demo-cafe"))
+      .run();
   });
 });

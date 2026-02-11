@@ -1,0 +1,12 @@
+{
+  "id": "0003-realms-and-revenue-balancing",
+  "title": "Realms & Revenue-Neutral Balancing",
+  "type": "feature",
+  "status": "completed",
+  "completed": "2026-02-11",
+  "priority": "high",
+  "created": "2026-02-11",
+  "updated": "2026-02-11",
+  "techStack": ["TypeScript", "Hono", "Bun", "SQLite", "Drizzle"],
+  "tags": ["multi-tenant", "realms", "pricing-algorithm", "revenue-neutral", "api-key"]
+}
