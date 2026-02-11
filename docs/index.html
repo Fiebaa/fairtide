@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fairify — Fair Pricing API</title>
+  <meta name="description" content="Revenue-neutral fair pricing API. Adjust prices based on income and location — without losing money.">
+  <meta property="og:title" content="Fairify — Fair Pricing API">
+  <meta property="og:description" content="Revenue-neutral fair pricing API. Adjust prices based on income and location — without losing money.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="hero">
+    <div class="container">
+      <h1>Fairify</h1>
+      <p class="tagline">Fair pricing that doesn't cost you a thing.</p>
+      <p class="subtitle">An API that adjusts prices based on income and location — while keeping your revenue balanced.</p>
+      <div class="cta-group">
+        <a href="#how-it-works" class="btn btn-primary">How It Works</a>
+        <a href="https://github.com/ollilindenmayr/fairify" class="btn btn-secondary">View on GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <h2>How It Works</h2>
+      <p class="section-intro">Three inputs, one fair price. Integrate with a single API call.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon">1</div>
+          <h3>Set Your Base Price</h3>
+          <p>You decide the standard price for your product — a coffee, a meal, a ticket. That's your anchor.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">2</div>
+          <h3>Customer Shares Income</h3>
+          <p>At checkout, the customer selects their income range. No verification needed — it's trust-based.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">3</div>
+          <h3>API Returns Fair Price</h3>
+          <p>Fairify calculates an adjusted price using income and location factors. Lower income pays less, higher income pays a bit more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="revenue-neutral" class="section section-alt">
+    <div class="container">
+      <h2>Revenue-Neutral by Design</h2>
+      <p class="section-intro">The question every business owner asks: "Won't I lose money?"</p>
+      <div class="balance-explanation">
+        <div class="balance-text">
+          <p>Fairify tracks every transaction's delta — the difference between your base price and the fair price. When too many discounts accumulate, the algorithm automatically <strong>dampens</strong> future adjustments, nudging prices back toward your base price.</p>
+          <p>Over time, discounts given to lower-income customers are offset by premiums from higher-income customers. Your revenue stays balanced.</p>
+          <div class="balance-statuses">
+            <div class="status-item status-balanced">
+              <span class="status-dot"></span>
+              <span><strong>Balanced</strong> — Revenue on track</span>
+            </div>
+            <div class="status-item status-recovering">
+              <span class="status-dot"></span>
+              <span><strong>Recovering</strong> — Dampening active, nudging toward base</span>
+            </div>
+            <div class="status-item status-surplus">
+              <span class="status-dot"></span>
+              <span><strong>Surplus</strong> — Premiums exceeded discounts, relaxing factors</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="api-example" class="section">
+    <div class="container">
+      <h2>Simple API Integration</h2>
+      <p class="section-intro">One POST request. That's the entire integration.</p>
+      <div class="code-blocks">
+        <div class="code-block">
+          <div class="code-header">Request</div>
+<pre><code><span class="kw">POST</span> /v1/calculate
+<span class="kw">Authorization:</span> Bearer your-api-key
+<span class="kw">Content-Type:</span> application/json
+
+{
+  <span class="key">"basePrice"</span>: <span class="num">4.50</span>,
+  <span class="key">"annualIncome"</span>: <span class="num">28000</span>,
+  <span class="key">"locationId"</span>: <span class="str">"berlin-de"</span>
+}</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header">Response</div>
+<pre><code>{
+  <span class="key">"fairPrice"</span>: <span class="num">3.78</span>,
+  <span class="key">"breakdown"</span>: {
+    <span class="key">"basePrice"</span>: <span class="num">4.50</span>,
+    <span class="key">"incomeFactor"</span>: <span class="num">0.85</span>,
+    <span class="key">"locationFactor"</span>: <span class="num">1.05</span>,
+    <span class="key">"adjustedIncomeFactor"</span>: <span class="num">0.80</span>,
+    <span class="key">"fairPrice"</span>: <span class="num">3.78</span>
+  },
+  <span class="key">"balanceStatus"</span>: <span class="str">"balanced"</span>
+}</code></pre>
+        </div>
+      </div>
+      <p class="api-link">Full API reference available at <a href="/v1/docs">Swagger UI</a></p>
+    </div>
+  </section>
+
+  <section id="get-started" class="section section-alt">
+    <div class="container">
+      <h2>Get Started</h2>
+      <div class="getting-started-steps">
+        <div class="gs-step">
+          <div class="gs-number">1</div>
+          <div class="gs-content">
+            <h3>Create a Realm</h3>
+            <p>Each business gets its own realm with an API key and isolated balance tracking.</p>
+<pre><code><span class="kw">POST</span> /v1/realms
+{ <span class="key">"name"</span>: <span class="str">"My Cafe"</span> }</code></pre>
+          </div>
+        </div>
+        <div class="gs-step">
+          <div class="gs-number">2</div>
+          <div class="gs-content">
+            <h3>Use Your API Key</h3>
+            <p>Include the returned API key in every request as a Bearer token.</p>
+          </div>
+        </div>
+        <div class="gs-step">
+          <div class="gs-number">3</div>
+          <div class="gs-content">
+            <h3>Check Your Balance</h3>
+            <p>Monitor your realm's revenue balance anytime.</p>
+<pre><code><span class="kw">GET</span> /v1/realms/:id/balance</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <strong>Fairify</strong>
+          <p>Fair pricing for everyone.</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/ollilindenmayr/fairify">GitHub</a>
+          <a href="/v1/docs">API Docs</a>
+          <a href="/v1/doc">OpenAPI Spec</a>
+        </div>
+      </div>
+      <p class="footer-copy">MIT License</p>
+    </div>
+  </footer>
+
+</body>
+</html>

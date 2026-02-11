@@ -1,0 +1,13 @@
+{
+  "id": "0004-github-pages-website",
+  "title": "GitHub Pages Landing Page",
+  "type": "feature",
+  "status": "completed",
+  "completed": "2026-02-11",
+  "started": "2026-02-11",
+  "priority": "medium",
+  "created": "2026-02-11",
+  "updated": "2026-02-11",
+  "techStack": ["HTML", "CSS", "GitHub Pages"],
+  "tags": ["website", "landing-page", "github-pages"]
+}
