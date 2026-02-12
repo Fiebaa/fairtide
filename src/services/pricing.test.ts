@@ -1,44 +1,72 @@
 import { describe, it, expect } from "bun:test";
 import { calculateFairPrice } from "./pricing.js";
+import type { Realm } from "../db/schema.js";
+
+const germanRealm: Realm = {
+  id: "test-de",
+  name: "Test DE",
+  countryCode: "DE",
+  apiKey: "fake",
+  balance: 0,
+  totalTransactions: 0,
+  dampingThreshold: -50,
+  createdAt: "2024-01-01",
+};
 
 describe("calculateFairPrice", () => {
-  it("calculates fair price for mid-income in Germany", () => {
-    // DE PPP factor = 0.95, pppIncome = 35000 * 0.95 = 33250 → bracket ≤40000 → factor 0.85
-    const result = calculateFairPrice(10, 35_000, "DE");
-    expect(result.fairPrice).toBe(8.5);
-    expect(result.breakdown.incomeFactor).toBe(0.85);
-    expect(result.breakdown.pppAdjustedIncome).toBe(33250);
-  });
-
-  it("calculates fair price for low income in Switzerland", () => {
-    // CH PPP factor = 0.65, pppIncome = 15000 * 0.65 = 9750 → bracket ≤20000 → factor 0.7
-    const result = calculateFairPrice(10, 15_000, "CH");
-    expect(result.fairPrice).toBe(7);
-    expect(result.breakdown.incomeFactor).toBe(0.7);
-    expect(result.breakdown.pppAdjustedIncome).toBe(9750);
-  });
-
-  it("calculates fair price for high income in Nigeria", () => {
-    // NG PPP factor = 2.95, pppIncome = 120000 * 2.95 = 354000 → bracket >100000 → factor 1.2
-    const result = calculateFairPrice(10, 120_000, "NG");
-    expect(result.fairPrice).toBe(12);
-    expect(result.breakdown.incomeFactor).toBe(1.2);
-    expect(result.breakdown.pppAdjustedIncome).toBe(354000);
-  });
-
-  it("returns breakdown with all factors", () => {
-    // JP PPP factor = 1.08, pppIncome = 50000 * 1.08 = 54000 → bracket ≤70000 → factor 1.0
-    const result = calculateFairPrice(20, 50_000, "JP");
-    expect(result.breakdown).toEqual({
-      basePrice: 20,
-      pppAdjustedIncome: 54000,
-      incomeFactor: 1.0,
-      fairPrice: 20,
+  describe("without realm (single-factor fallback)", () => {
+    it("calculates fair price for mid-income in Germany", () => {
+      // DE PPP factor = 0.95, pppIncome = 35000 * 0.95 = 33250 → bracket ≤40000 → factor 0.85
+      const result = calculateFairPrice(10, 35_000, "DE");
+      expect(result.fairPrice).toBe(8.5);
+      expect(result.breakdown.incomeFactor).toBe(0.85);
+      expect(result.breakdown.pppAdjustedIncome).toBe(33250);
+      expect(result.breakdown.buyerPppFactor).toBe(0.95);
+      expect(result.breakdown.sellerPppFactor).toBe(0.95);
     });
-    expect(result.fairPrice).toBe(result.breakdown.fairPrice);
+
+    it("throws for unknown country code", () => {
+      expect(() => calculateFairPrice(10, 35_000, "XX")).toThrow("not found");
+    });
   });
 
-  it("throws for unknown country code", () => {
-    expect(() => calculateFairPrice(10, 35_000, "XX")).toThrow("not found");
+  describe("with realm (relative PPP)", () => {
+    it("Croatian buyer at German seller", () => {
+      // HR=1.25, DE=0.95, ratio=0.95/1.25=0.76
+      // pppIncome = 15000 * 0.76 = 11400 → bracket ≤20000 → factor 0.70
+      const result = calculateFairPrice(3, 15_000, "HR", germanRealm);
+      expect(result.fairPrice).toBe(2.1);
+      expect(result.breakdown.pppAdjustedIncome).toBe(11400);
+      expect(result.breakdown.buyerPppFactor).toBe(1.25);
+      expect(result.breakdown.sellerPppFactor).toBe(0.95);
+    });
+
+    it("Swiss buyer at German seller", () => {
+      // CH=0.65, DE=0.95, ratio=0.95/0.65=1.4615...
+      // pppIncome = 120000 * 0.95 / 0.65 = 175384.62 → bracket >100000 → factor 1.20
+      const result = calculateFairPrice(3, 120_000, "CH", germanRealm);
+      expect(result.fairPrice).toBe(3.6);
+      expect(result.breakdown.buyerPppFactor).toBe(0.65);
+      expect(result.breakdown.sellerPppFactor).toBe(0.95);
+    });
+
+    it("same-country buyer and seller yields ratio 1.0", () => {
+      // DE buyer at DE seller: ratio = 0.95/0.95 = 1.0
+      // pppIncome = 35000 * 1.0 = 35000 → bracket ≤40000 → factor 0.85
+      const result = calculateFairPrice(10, 35_000, "DE", germanRealm);
+      expect(result.fairPrice).toBe(8.5);
+      expect(result.breakdown.pppAdjustedIncome).toBe(35000);
+    });
+
+    it("returns full breakdown with PPP factors", () => {
+      // JP buyer at DE seller: JP=1.08, DE=0.95, ratio=0.95/1.08=0.8796...
+      // pppIncome = 50000 * 0.95 / 1.08 = 43981.48 → bracket ≤70000 → factor 1.0
+      const result = calculateFairPrice(20, 50_000, "JP", germanRealm);
+      expect(result.breakdown.basePrice).toBe(20);
+      expect(result.breakdown.buyerPppFactor).toBe(1.08);
+      expect(result.breakdown.sellerPppFactor).toBe(0.95);
+      expect(result.breakdown.incomeFactor).toBe(1.0);
+      expect(result.fairPrice).toBe(result.breakdown.fairPrice);
+    });
   });
 });

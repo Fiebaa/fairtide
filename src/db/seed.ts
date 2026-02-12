@@ -7,6 +7,7 @@ const DEMO_API_KEY = "demo-api-key-for-testing-only-do-not-use-in-production";
 const demoRealm = {
   id: "demo-cafe",
   name: "Demo Cafe",
+  countryCode: "DE",
   apiKey: hashApiKey(DEMO_API_KEY),
 };
 

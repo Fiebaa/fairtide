@@ -1,0 +1,1 @@
+ALTER TABLE `realms` ADD `country_code` text NOT NULL DEFAULT 'US';
