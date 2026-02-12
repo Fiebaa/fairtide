@@ -1,0 +1,10 @@
+{
+  "id": "0007",
+  "name": "ppp-pricing",
+  "title": "Replace Location Factor with PPP-Adjusted Income",
+  "status": "completed",
+  "createdAt": "2026-02-12T14:04:00Z",
+  "completedAt": "2026-02-12T15:17:00Z",
+  "priority": "high",
+  "type": "feature"
+}

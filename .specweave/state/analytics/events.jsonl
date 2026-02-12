@@ -6,3 +6,4 @@
 {"timestamp":"2026-02-11T19:51:02.000Z","type":"command","name":"/sw:do","success":true,"plugin":"specweave"}
 {"timestamp":"2026-02-11T20:07:10.000Z","type":"command","name":"/sw:do","success":true,"plugin":"specweave"}
 {"timestamp":"2026-02-12T07:30:00.000Z","type":"command","name":"/sw:do","success":true,"plugin":"specweave"}
+{"timestamp":"2026-02-12T15:16:40.000Z","type":"command","name":"/sw:done","success":true,"plugin":"specweave"}

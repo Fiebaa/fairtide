@@ -1,5 +1,5 @@
 import { getIncomeFactor } from "../config/income-brackets.js";
-import { getLocationFactor } from "./location.js";
+import { convertToPppIncome } from "./ppp.js";
 import type { Realm } from "../db/schema.js";
 
 export type BalanceStatus = "balanced" | "recovering" | "surplus";
@@ -8,8 +8,8 @@ export interface PricingResult {
   fairPrice: number;
   breakdown: {
     basePrice: number;
+    pppAdjustedIncome: number;
     incomeFactor: number;
-    locationFactor: number;
     adjustedIncomeFactor?: number;
     fairPrice: number;
   };
@@ -35,14 +35,14 @@ function getBalanceStatus(balance: number): BalanceStatus {
   return "balanced";
 }
 
-export async function calculateFairPrice(
+export function calculateFairPrice(
   basePrice: number,
   annualIncome: number,
-  locationId: string,
+  countryCode: string,
   realm?: Realm,
-): Promise<PricingResult> {
-  const standardIncomeFactor = getIncomeFactor(annualIncome);
-  const locationFactor = await getLocationFactor(locationId);
+): PricingResult {
+  const pppIncome = convertToPppIncome(annualIncome, countryCode);
+  const standardIncomeFactor = getIncomeFactor(pppIncome);
 
   let incomeFactor = standardIncomeFactor;
 
@@ -55,15 +55,14 @@ export async function calculateFairPrice(
       Math.round((1.0 + (standardIncomeFactor - 1.0) * d) * 1000) / 1000;
   }
 
-  const fairPrice =
-    Math.round(basePrice * incomeFactor * locationFactor * 100) / 100;
+  const fairPrice = Math.round(basePrice * incomeFactor * 100) / 100;
 
   const result: PricingResult = {
     fairPrice,
     breakdown: {
       basePrice,
+      pppAdjustedIncome: pppIncome,
       incomeFactor: standardIncomeFactor,
-      locationFactor,
       fairPrice,
     },
   };

@@ -7,19 +7,19 @@ import { auth } from "../middleware/auth.js";
 const calculateRequestSchema = z.object({
   basePrice: z.number().positive().openapi({ example: 10.0 }),
   annualIncome: z.number().positive().openapi({ example: 35000 }),
-  locationId: z.string().min(1).openapi({ example: "berlin-de" }),
+  countryCode: z.string().length(2).toUpperCase().openapi({ example: "DE" }),
 });
 
 const breakdownSchema = z.object({
   basePrice: z.number().openapi({ example: 10.0 }),
+  pppAdjustedIncome: z.number().openapi({ example: 33250 }),
   incomeFactor: z.number().openapi({ example: 0.85 }),
-  locationFactor: z.number().openapi({ example: 1.05 }),
   adjustedIncomeFactor: z.number().optional().openapi({ example: 0.92 }),
-  fairPrice: z.number().openapi({ example: 8.93 }),
+  fairPrice: z.number().openapi({ example: 8.5 }),
 });
 
 const calculateResponseSchema = z.object({
-  fairPrice: z.number().openapi({ example: 8.93 }),
+  fairPrice: z.number().openapi({ example: 8.5 }),
   breakdown: breakdownSchema,
   balanceStatus: z
     .enum(["balanced", "recovering", "surplus"])
@@ -59,20 +59,20 @@ const route = createRoute({
     },
     404: {
       content: { "application/json": { schema: errorSchema } },
-      description: "Location not found",
+      description: "Country code not found",
     },
   },
   middleware: [auth] as const,
 });
 
 export const calculateRoute = createRouter().openapi(route, async (c) => {
-  const { basePrice, annualIncome, locationId } = c.req.valid("json");
+  const { basePrice, annualIncome, countryCode } = c.req.valid("json");
   const realm = c.get("realm");
 
-  const result = await calculateFairPrice(
+  const result = calculateFairPrice(
     basePrice,
     annualIncome,
-    locationId,
+    countryCode,
     realm,
   );
 

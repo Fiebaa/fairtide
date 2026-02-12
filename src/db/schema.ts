@@ -1,13 +1,6 @@
 import { sqliteTable, text, real, integer } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
-export const locations = sqliteTable("locations", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  country: text("country").notNull(),
-  costOfLivingIndex: real("cost_of_living_index").notNull(),
-});
-
 export const realms = sqliteTable("realms", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -33,6 +26,5 @@ export const transactions = sqliteTable("transactions", {
     .default(sql`(datetime('now'))`),
 });
 
-export type Location = typeof locations.$inferSelect;
 export type Realm = typeof realms.$inferSelect;
 export type Transaction = typeof transactions.$inferSelect;

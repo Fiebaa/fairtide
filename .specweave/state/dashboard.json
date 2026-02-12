@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-02-12T07:49:13Z",
+  "updatedAt": "2026-02-12T15:17:59Z",
   "increments": {
     "0001-fairify-api": {
       "status": "completed",
@@ -109,20 +109,38 @@
       "createdAt": "",
       "lastActivity": "2026-02-12T08:49:13Z",
       "userStories": []
+    },
+    "0007-ppp-pricing": {
+      "status": "completed",
+      "type": "feature",
+      "priority": "high",
+      "title": "Replace Location Factor with PPP-Adjusted Income",
+      "project": "",
+      "tasks": {
+        "total": 6,
+        "completed": 0
+      },
+      "acs": {
+        "total": 0,
+        "completed": 0
+      },
+      "createdAt": "2026-02-12T14:04:00Z",
+      "lastActivity": "2026-02-12T16:17:59Z",
+      "userStories": []
     }
   },
   "summary": {
-    "total": 6,
+    "total": 7,
     "active": 0,
     "paused": 0,
     "backlog": 0,
     "planning": 0,
     "ready_for_review": 0,
-    "completed": 6,
+    "completed": 7,
     "abandoned": 0,
     "archived": 0,
     "byType": {
-      "feature": 6,
+      "feature": 7,
       "hotfix": 0,
       "bug": 0,
       "refactor": 0,
@@ -134,7 +152,7 @@
       "P1": 0,
       "P2": 0,
       "P3": 0,
-      "high": 5,
+      "high": 6,
       "medium": 1
     },
     "in-progress": 0
@@ -181,6 +199,11 @@
       "metadata": 1770882553,
       "tasks": 1770882528,
       "spec": 1770882538
+    },
+    "0007-ppp-pricing": {
+      "metadata": 1770909479,
+      "tasks": 1770909143,
+      "spec": 1770909130
     }
   }
 }
