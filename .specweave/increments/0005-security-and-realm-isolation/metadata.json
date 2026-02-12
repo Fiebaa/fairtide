@@ -1,0 +1,13 @@
+{
+  "id": "0005-security-and-realm-isolation",
+  "title": "Security & Realm Isolation",
+  "type": "feature",
+  "status": "completed",
+  "completed": "2026-02-11",
+  "started": "2026-02-11",
+  "priority": "high",
+  "created": "2026-02-11",
+  "updated": "2026-02-11",
+  "techStack": ["TypeScript", "Hono", "Bun", "SQLite", "Drizzle"],
+  "tags": ["security", "realm-isolation", "api-key-hashing", "hardening"]
+}

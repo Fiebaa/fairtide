@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-02-11T17:01:53Z",
+  "updatedAt": "2026-02-12T07:49:13Z",
   "increments": {
     "0001-fairify-api": {
       "status": "completed",
@@ -37,20 +37,92 @@
       "createdAt": "",
       "lastActivity": "2026-02-11T18:01:53Z",
       "userStories": []
+    },
+    "0003-realms-and-revenue-balancing": {
+      "status": "completed",
+      "type": "feature",
+      "priority": "high",
+      "title": "Realms & Revenue-Neutral Balancing",
+      "project": "",
+      "tasks": {
+        "total": 0,
+        "completed": 0
+      },
+      "acs": {
+        "total": 0,
+        "completed": 0
+      },
+      "createdAt": "",
+      "lastActivity": "2026-02-11T19:58:58Z",
+      "userStories": []
+    },
+    "0004-github-pages-website": {
+      "status": "completed",
+      "type": "feature",
+      "priority": "medium",
+      "title": "GitHub Pages Landing Page",
+      "project": "",
+      "tasks": {
+        "total": 0,
+        "completed": 0
+      },
+      "acs": {
+        "total": 0,
+        "completed": 0
+      },
+      "createdAt": "",
+      "lastActivity": "2026-02-11T20:55:58Z",
+      "userStories": []
+    },
+    "0005-security-and-realm-isolation": {
+      "status": "completed",
+      "type": "feature",
+      "priority": "high",
+      "title": "Security & Realm Isolation",
+      "project": "",
+      "tasks": {
+        "total": 0,
+        "completed": 0
+      },
+      "acs": {
+        "total": 0,
+        "completed": 0
+      },
+      "createdAt": "",
+      "lastActivity": "2026-02-11T21:14:01Z",
+      "userStories": []
+    },
+    "0006-rebranding-and-launch-page": {
+      "status": "completed",
+      "type": "feature",
+      "priority": "high",
+      "title": "Rebranding & Launch Page",
+      "project": "",
+      "tasks": {
+        "total": 0,
+        "completed": 0
+      },
+      "acs": {
+        "total": 0,
+        "completed": 0
+      },
+      "createdAt": "",
+      "lastActivity": "2026-02-12T08:49:13Z",
+      "userStories": []
     }
   },
   "summary": {
-    "total": 2,
+    "total": 6,
     "active": 0,
     "paused": 0,
     "backlog": 0,
     "planning": 0,
     "ready_for_review": 0,
-    "completed": 2,
+    "completed": 6,
     "abandoned": 0,
     "archived": 0,
     "byType": {
-      "feature": 2,
+      "feature": 6,
       "hotfix": 0,
       "bug": 0,
       "refactor": 0,
@@ -62,8 +134,10 @@
       "P1": 0,
       "P2": 0,
       "P3": 0,
-      "high": 2
-    }
+      "high": 5,
+      "medium": 1
+    },
+    "in-progress": 0
   },
   "jobs": {
     "running": [],
@@ -87,6 +161,26 @@
       "metadata": 1770829313,
       "tasks": 1770802420,
       "spec": 1770802422
+    },
+    "0003-realms-and-revenue-balancing": {
+      "metadata": 1770836338,
+      "tasks": 1770836173,
+      "spec": 1770836312
+    },
+    "0004-github-pages-website": {
+      "metadata": 1770839758,
+      "tasks": 1770839738,
+      "spec": 1770839747
+    },
+    "0005-security-and-realm-isolation": {
+      "metadata": 1770840841,
+      "tasks": 1770840820,
+      "spec": 1770840830
+    },
+    "0006-rebranding-and-launch-page": {
+      "metadata": 1770882553,
+      "tasks": 1770882528,
+      "spec": 1770882538
     }
   }
 }

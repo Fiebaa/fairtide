@@ -1,16 +1,25 @@
 {
-  "checked": "2026-02-11T08:23:18Z",
-  "status": "ok",
-  "missing": [],
-  "warned": false,
+  "checked": "2026-02-12T13:24:50Z",
+  "status": "missing",
+  "missing": [
+    {
+      "language": "TypeScript (26 files)",
+      "type": "missing_binary",
+      "binaryInstall": "npm install -g typescript-language-server typescript",
+      "pluginInstall": "claude plugin install vtsls@claude-code-lsps",
+      "plugin": "vtsls",
+      "message": "Language server binary not installed. Run: npm install -g typescript-language-server typescript"
+    }
+  ],
+  "warned": true,
   "lspEnvReady": true,
   "lspMarketplace": "claude-code-lsps",
   "stats": {
-    "totalLanguages": 0,
-    "checkedLanguages": 0,
+    "totalLanguages": 1,
+    "checkedLanguages": 1,
     "minFileCount": 10,
     "maxLanguages": 3,
-    "binaryMissing": 0,
+    "binaryMissing": 1,
     "pluginMissing": 0
   }
 }
