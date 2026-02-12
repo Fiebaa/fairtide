@@ -4,6 +4,7 @@ import { sql } from "drizzle-orm";
 export const realms = sqliteTable("realms", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  countryCode: text("country_code").notNull(),
   apiKey: text("api_key").notNull().unique(),
   balance: real("balance").notNull().default(0),
   totalTransactions: integer("total_transactions").notNull().default(0),

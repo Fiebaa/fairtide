@@ -16,6 +16,7 @@ const createRealmRoute = createRoute({
         "application/json": {
           schema: z.object({
             name: z.string().min(1).max(100).openapi({ example: "Cafe Bar" }),
+            countryCode: z.string().length(2).toUpperCase().openapi({ example: "DE" }),
           }),
         },
       },
@@ -29,6 +30,7 @@ const createRealmRoute = createRoute({
           schema: z.object({
             id: z.string().openapi({ example: "abc-123" }),
             name: z.string().openapi({ example: "Cafe Bar" }),
+            countryCode: z.string().openapi({ example: "DE" }),
             apiKey: z.string().openapi({ example: "a1b2c3..." }),
           }),
         },
@@ -39,8 +41,8 @@ const createRealmRoute = createRoute({
 });
 
 realmRouter.openapi(createRealmRoute, async (c) => {
-  const { name } = c.req.valid("json");
-  const realm = await createRealm(name);
+  const { name, countryCode } = c.req.valid("json");
+  const realm = await createRealm(name, countryCode);
   return c.json(realm, 201);
 });
 
@@ -58,6 +60,7 @@ const getRealmRoute = createRoute({
           schema: z.object({
             id: z.string(),
             name: z.string(),
+            countryCode: z.string(),
             balance: z.number(),
             totalTransactions: z.number(),
             createdAt: z.string(),
@@ -122,6 +125,7 @@ realmRouter.openapi(getRealmRoute, async (c) => {
     {
       id: realm.id,
       name: realm.name,
+      countryCode: realm.countryCode,
       balance: Math.round(realm.balance * 100) / 100,
       totalTransactions: realm.totalTransactions,
       createdAt: realm.createdAt,

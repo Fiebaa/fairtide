@@ -54,9 +54,12 @@ describe("POST /v1/calculate", () => {
     });
     expect(res.status).toBe(200);
     const body = await res.json();
-    // DE PPP factor = 0.95, pppIncome = 35000 * 0.95 = 33250 → bracket ≤40000 → factor 0.85
+    // DE buyer at DE seller: ratio = 0.95/0.95 = 1.0
+    // pppIncome = 35000 * 1.0 = 35000 → bracket ≤40000 → factor 0.85
     expect(body.fairPrice).toBe(8.5);
-    expect(body.breakdown.pppAdjustedIncome).toBe(33250);
+    expect(body.breakdown.pppAdjustedIncome).toBe(35000);
+    expect(body.breakdown.buyerPppFactor).toBe(0.95);
+    expect(body.breakdown.sellerPppFactor).toBe(0.95);
     expect(body.breakdown.incomeFactor).toBe(0.85);
     expect(body.balanceStatus).toBeDefined();
   });
@@ -121,12 +124,13 @@ describe("POST /v1/realms", () => {
     const res = await app.request("/v1/realms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "Test Cafe" }),
+      body: JSON.stringify({ name: "Test Cafe", countryCode: "DE" }),
     });
     expect(res.status).toBe(201);
     const body = await res.json();
     expect(body.id).toBeDefined();
     expect(body.name).toBe("Test Cafe");
+    expect(body.countryCode).toBe("DE");
     expect(body.apiKey).toBeDefined();
     expect(body.apiKey.length).toBeGreaterThanOrEqual(32);
   });
@@ -135,9 +139,29 @@ describe("POST /v1/realms", () => {
     const res = await app.request("/v1/realms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ countryCode: "DE" }),
     });
     expect(res.status).toBe(400);
+  });
+
+  it("returns 400 for missing countryCode", async () => {
+    const res = await app.request("/v1/realms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Test" }),
+    });
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 404 for invalid countryCode", async () => {
+    const res = await app.request("/v1/realms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Test", countryCode: "XX" }),
+    });
+    expect(res.status).toBe(404);
+    const body = await res.json();
+    expect(body.error.code).toBe("NOT_FOUND");
   });
 });
 
@@ -148,6 +172,7 @@ describe("GET /v1/realms/:id", () => {
     const body = await res.json();
     expect(body.id).toBe("demo-cafe");
     expect(body.name).toBe("Demo Cafe");
+    expect(body.countryCode).toBe("DE");
     expect(typeof body.balance).toBe("number");
     expect(typeof body.totalTransactions).toBe("number");
   });
@@ -197,13 +222,11 @@ describe("Security", () => {
     const res = await app.request("/v1/realms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "Key Test Cafe" }),
+      body: JSON.stringify({ name: "Key Test Cafe", countryCode: "US" }),
     });
     expect(res.status).toBe(201);
     const body = await res.json();
-    // Key should be 64-char hex (plain), not a SHA-256 hash of that
     expect(body.apiKey).toMatch(/^[0-9a-f]{64}$/);
-    // Verify the key works for auth
     const authRes = await app.request(`/v1/realms/${body.id}`, {
       headers: { Authorization: `Bearer ${body.apiKey}` },
     });
@@ -258,7 +281,6 @@ describe("GET /v1/docs", () => {
 
 describe("Revenue-neutral balancing", () => {
   it("dampens income factor when realm balance is negative", async () => {
-    // Set demo realm balance to -30 (recovering)
     db.update(realms)
       .set({ balance: -30, dampingThreshold: -50 })
       .where(require("drizzle-orm").eq(realms.id, "demo-cafe"))
@@ -276,15 +298,14 @@ describe("Revenue-neutral balancing", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
 
-    // DE PPP factor = 0.95, pppIncome = 15000 * 0.95 = 14250 → bracket ≤20000 → factor 0.7
+    // DE buyer at DE seller: ratio = 1.0, pppIncome = 15000 → bracket ≤20000 → factor 0.7
     // With balance -30, threshold -50: D = 1 - (-30 / -50) = 0.4
-    // Adjusted = 1.0 + (0.7 - 1.0) * 0.4 = 1.0 - 0.12 = 0.88
+    // Adjusted = 1.0 + (0.7 - 1.0) * 0.4 = 0.88
     expect(body.breakdown.incomeFactor).toBe(0.7);
     expect(body.breakdown.adjustedIncomeFactor).toBeGreaterThan(0.7);
     expect(body.breakdown.adjustedIncomeFactor).toBeLessThan(1.0);
     expect(body.balanceStatus).toBe("recovering");
 
-    // Reset balance for other tests
     db.update(realms)
       .set({ balance: 0, totalTransactions: 0 })
       .where(require("drizzle-orm").eq(realms.id, "demo-cafe"))

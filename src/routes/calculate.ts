@@ -12,7 +12,9 @@ const calculateRequestSchema = z.object({
 
 const breakdownSchema = z.object({
   basePrice: z.number().openapi({ example: 10.0 }),
-  pppAdjustedIncome: z.number().openapi({ example: 33250 }),
+  pppAdjustedIncome: z.number().openapi({ example: 35000 }),
+  buyerPppFactor: z.number().openapi({ example: 0.95 }),
+  sellerPppFactor: z.number().openapi({ example: 0.95 }),
   incomeFactor: z.number().openapi({ example: 0.85 }),
   adjustedIncomeFactor: z.number().optional().openapi({ example: 0.92 }),
   fairPrice: z.number().openapi({ example: 8.5 }),

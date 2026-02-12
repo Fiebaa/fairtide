@@ -1,4 +1,5 @@
 import { getIncomeFactor } from "../config/income-brackets.js";
+import { getPppFactor } from "../config/ppp-factors.js";
 import { convertToPppIncome } from "./ppp.js";
 import type { Realm } from "../db/schema.js";
 
@@ -9,6 +10,8 @@ export interface PricingResult {
   breakdown: {
     basePrice: number;
     pppAdjustedIncome: number;
+    buyerPppFactor: number;
+    sellerPppFactor: number;
     incomeFactor: number;
     adjustedIncomeFactor?: number;
     fairPrice: number;
@@ -41,8 +44,14 @@ export function calculateFairPrice(
   countryCode: string,
   realm?: Realm,
 ): PricingResult {
-  const pppIncome = convertToPppIncome(annualIncome, countryCode);
+  const sellerCountryCode = realm?.countryCode;
+  const pppIncome = convertToPppIncome(annualIncome, countryCode, sellerCountryCode);
   const standardIncomeFactor = getIncomeFactor(pppIncome);
+
+  const buyerFactor = getPppFactor(countryCode)!;
+  const sellerFactor = sellerCountryCode
+    ? getPppFactor(sellerCountryCode)!
+    : buyerFactor;
 
   let incomeFactor = standardIncomeFactor;
 
@@ -62,6 +71,8 @@ export function calculateFairPrice(
     breakdown: {
       basePrice,
       pppAdjustedIncome: pppIncome,
+      buyerPppFactor: buyerFactor,
+      sellerPppFactor: sellerFactor,
       incomeFactor: standardIncomeFactor,
       fairPrice,
     },
