@@ -9,6 +9,7 @@ import { errorHandler } from "./middleware/error-handler.js";
 import { requestId } from "./middleware/request-id.js";
 import { logger } from "./middleware/logger.js";
 import { rateLimit } from "./middleware/rate-limit.js";
+import { securityHeaders } from "./middleware/security-headers.js";
 import { sqlite } from "./db/index.js";
 import { config } from "./config/env.js";
 
@@ -16,6 +17,7 @@ const app = createRouter();
 
 // Middleware (order matters)
 app.use("*", requestId);
+app.use("*", securityHeaders);
 app.use("*", logger);
 app.use("*", compress());
 app.use(
@@ -24,8 +26,9 @@ app.use(
     origin: config.corsOrigin === "*" ? "*" : config.corsOrigin.split(","),
   }),
 );
-// Rate limiting is handled per-realm in the rateLimit middleware
+// Rate limiting: per-realm for calculate, per-IP for realm creation
 app.use("/v1/calculate", rateLimit);
+app.use("/v1/realms", rateLimit);
 
 app.onError(errorHandler);
 
@@ -38,10 +41,10 @@ app.route("/v1", realmRouter);
 app.doc("/v1/doc", {
   openapi: "3.1.0",
   info: {
-    title: "Fairify API",
+    title: "Fairtide API",
     version: "0.1.0",
     description:
-      "Calculate fair prices for consumables based on income and location",
+      "Fair pricing API — prices rise and fall like the tide, so everyone gets a fair deal",
   },
 });
 

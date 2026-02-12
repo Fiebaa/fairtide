@@ -1,6 +1,6 @@
 export const config = {
   port: Number(process.env.PORT) || 3000,
-  dbPath: process.env.DB_PATH || "./data/fairify.db",
+  dbPath: process.env.DB_PATH || "./data/fairtide.db",
   logLevel: (process.env.LOG_LEVEL || "info") as
     | "debug"
     | "info"

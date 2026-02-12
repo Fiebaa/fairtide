@@ -1,5 +1,6 @@
 import { db } from "./index.js";
 import { locations, realms } from "./schema.js";
+import { hashApiKey } from "../utils/crypto.js";
 
 const locationData = [
   { id: "zurich-ch", name: "Zurich", country: "CH", costOfLivingIndex: 1.35 },
@@ -19,11 +20,13 @@ const locationData = [
 db.insert(locations).values(locationData).onConflictDoNothing().run();
 console.log(`Seeded ${locationData.length} locations.`);
 
+const DEMO_API_KEY = "demo-api-key-for-testing-only-do-not-use-in-production";
+
 const demoRealm = {
   id: "demo-cafe",
   name: "Demo Cafe",
-  apiKey: "demo-api-key-for-testing-only-do-not-use-in-production",
+  apiKey: hashApiKey(DEMO_API_KEY),
 };
 
 db.insert(realms).values(demoRealm).onConflictDoNothing().run();
-console.log("Seeded demo realm (API key: demo-api-key-for-testing-only-do-not-use-in-production).");
+console.log("Seeded demo realm (hashed API key stored).");

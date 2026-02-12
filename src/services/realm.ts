@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { realms } from "../db/schema.js";
+import { hashApiKey } from "../utils/crypto.js";
 
 function generateApiKey(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
@@ -13,17 +14,20 @@ function generateId(): string {
 
 export async function createRealm(name: string) {
   const id = generateId();
-  const apiKey = generateApiKey();
+  const plainKey = generateApiKey();
+  const hashedKey = hashApiKey(plainKey);
 
-  db.insert(realms).values({ id, name, apiKey }).run();
+  db.insert(realms).values({ id, name, apiKey: hashedKey }).run();
 
-  return { id, name, apiKey };
+  // Plain key returned only here — never stored, never retrievable again
+  return { id, name, apiKey: plainKey };
 }
 
 export async function getRealm(id: string) {
   return db.select().from(realms).where(eq(realms.id, id)).get();
 }
 
-export async function getRealmByApiKey(apiKey: string) {
-  return db.select().from(realms).where(eq(realms.apiKey, apiKey)).get();
+export async function getRealmByApiKey(plainKey: string) {
+  const hashedKey = hashApiKey(plainKey);
+  return db.select().from(realms).where(eq(realms.apiKey, hashedKey)).get();
 }

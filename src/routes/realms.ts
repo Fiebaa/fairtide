@@ -76,6 +76,16 @@ const getRealmRoute = createRoute({
       },
       description: "Unauthorized",
     },
+    403: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            error: z.object({ code: z.string(), message: z.string() }),
+          }),
+        },
+      },
+      description: "Forbidden — cannot access another realm",
+    },
     404: {
       content: {
         "application/json": {
@@ -92,20 +102,19 @@ const getRealmRoute = createRoute({
 
 realmRouter.openapi(getRealmRoute, async (c) => {
   const { id } = c.req.valid("param");
+  const authRealm = c.get("realm");
+  if (authRealm.id !== id) {
+    return c.json(
+      { error: { code: "FORBIDDEN", message: "Access denied to this realm" } },
+      403,
+    );
+  }
+
   const realm = await getRealm(id);
   if (!realm) {
     return c.json(
       { error: { code: "NOT_FOUND", message: "Realm not found" } },
       404,
-    );
-  }
-
-  // Ensure the authenticated realm matches the requested realm
-  const authRealm = c.get("realm");
-  if (authRealm.id !== id) {
-    return c.json(
-      { error: { code: "UNAUTHORIZED", message: "Access denied" } },
-      401,
     );
   }
 
@@ -151,6 +160,16 @@ const getBalanceRoute = createRoute({
       },
       description: "Unauthorized",
     },
+    403: {
+      content: {
+        "application/json": {
+          schema: z.object({
+            error: z.object({ code: z.string(), message: z.string() }),
+          }),
+        },
+      },
+      description: "Forbidden — cannot access another realm",
+    },
   },
   middleware: [auth] as const,
 });
@@ -160,8 +179,8 @@ realmRouter.openapi(getBalanceRoute, async (c) => {
   const authRealm = c.get("realm");
   if (authRealm.id !== id) {
     return c.json(
-      { error: { code: "UNAUTHORIZED", message: "Access denied" } },
-      401,
+      { error: { code: "FORBIDDEN", message: "Access denied to this realm" } },
+      403,
     );
   }
 

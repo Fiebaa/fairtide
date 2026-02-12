@@ -167,9 +167,46 @@ describe("GET /v1/realms/:id/balance", () => {
     expect(typeof body.averageDelta).toBe("number");
   });
 
-  it("returns 401 for wrong realm", async () => {
+  it("returns 403 for wrong realm", async () => {
     const res = await authRequest("/v1/realms/other-realm/balance");
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error.code).toBe("FORBIDDEN");
+  });
+});
+
+describe("Security", () => {
+  it("includes security headers on every response", async () => {
+    const res = await app.request("/v1/health");
+    expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
+    expect(res.headers.get("X-Frame-Options")).toBe("DENY");
+    expect(res.headers.get("Strict-Transport-Security")).toBe(
+      "max-age=31536000; includeSubDomains",
+    );
+  });
+
+  it("returns 403 when accessing another realm's details", async () => {
+    const res = await authRequest("/v1/realms/other-realm");
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error.code).toBe("FORBIDDEN");
+  });
+
+  it("returns plain API key only on realm creation", async () => {
+    const res = await app.request("/v1/realms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Key Test Cafe" }),
+    });
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    // Key should be 64-char hex (plain), not a SHA-256 hash of that
+    expect(body.apiKey).toMatch(/^[0-9a-f]{64}$/);
+    // Verify the key works for auth
+    const authRes = await app.request(`/v1/realms/${body.id}`, {
+      headers: { Authorization: `Bearer ${body.apiKey}` },
+    });
+    expect(authRes.status).toBe(200);
   });
 });
 
@@ -205,7 +242,7 @@ describe("GET /v1/doc", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.openapi).toBe("3.1.0");
-    expect(body.info.title).toBe("Fairify API");
+    expect(body.info.title).toBe("Fairtide API");
   });
 });
 
