@@ -4,15 +4,16 @@ A fair pricing API — prices rise and fall like the tide, so everyone gets a fa
 
 ## How It Works
 
-Fairtide adjusts prices using PPP (Purchasing Power Parity) normalization:
+Fairtide adjusts prices using relative PPP (Purchasing Power Parity):
 
-1. Your reported income is converted to US-equivalent purchasing power using your country's PPP factor
-2. The PPP-adjusted income determines an income factor via bracket lookup
-3. The fair price is calculated from the base price and income factor
+1. Each realm (merchant) has a seller country — where the purchase happens
+2. Your income is adjusted using relative PPP: buyer's purchasing power vs. seller's local prices
+3. The PPP-adjusted income determines an income factor via bracket lookup
+4. The fair price is calculated from the base price and income factor
 
 ```
-pppIncome = annualIncome * pppFactor(countryCode)
-fairPrice = basePrice * incomeFactor(pppIncome)
+pppIncome = annualIncome × (sellerPppFactor / buyerPppFactor)
+fairPrice = basePrice × incomeFactor(pppIncome)
 ```
 
 ### Income Brackets (PPP-Adjusted USD)
@@ -76,12 +77,42 @@ POST /v1/calculate
   "fairPrice": 8.50,
   "breakdown": {
     "basePrice": 10.00,
-    "pppAdjustedIncome": 33250,
+    "pppAdjustedIncome": 35000,
+    "buyerPppFactor": 0.95,
+    "sellerPppFactor": 0.95,
     "incomeFactor": 0.85,
     "fairPrice": 8.50
   }
 }
 ```
+
+### Create Realm
+
+```
+POST /v1/realms
+```
+
+**Request:**
+
+```json
+{
+  "name": "My Coffee Shop",
+  "countryCode": "DE"
+}
+```
+
+**Response (201):**
+
+```json
+{
+  "id": "abc-123",
+  "name": "My Coffee Shop",
+  "countryCode": "DE",
+  "apiKey": "your-api-key-shown-only-once"
+}
+```
+
+The `countryCode` is the seller's country (where the purchase happens). The `apiKey` is returned only on creation — store it securely.
 
 ### Health Check
 
