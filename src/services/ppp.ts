@@ -16,7 +16,7 @@ export function convertToPppIncome(
   sellerCountryCode?: string,
 ): number {
   const buyerFactor = getPppFactor(buyerCountryCode);
-  if (buyerFactor === undefined) {
+  if (buyerFactor === undefined || buyerFactor === 0) {
     throw new NotFoundError(
       `Country code '${buyerCountryCode}' not found. Use a valid ISO 3166-1 alpha-2 code (e.g. 'DE', 'US').`,
     );

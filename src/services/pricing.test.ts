@@ -58,6 +58,22 @@ describe("calculateFairPrice", () => {
       expect(result.breakdown.pppAdjustedIncome).toBe(35000);
     });
 
+    it("handles extreme PPP ratio (CH buyer at Indian seller)", () => {
+      // CH=0.65, IN=3.75, ratio=3.75/0.65=5.769...
+      // pppIncome = 50000 * 5.769 = 288461.54 → bracket >100000 → factor 1.20
+      const indiaRealm: Realm = { ...germanRealm, id: "test-in", countryCode: "IN" };
+      const result = calculateFairPrice(10, 50_000, "CH", indiaRealm);
+      expect(result.fairPrice).toBe(12);
+      expect(isFinite(result.fairPrice)).toBe(true);
+      expect(result.breakdown.buyerPppFactor).toBe(0.65);
+      expect(result.breakdown.sellerPppFactor).toBe(3.75);
+    });
+
+    it("throws for invalid seller country in realm", () => {
+      const badRealm: Realm = { ...germanRealm, id: "test-bad", countryCode: "XX" };
+      expect(() => calculateFairPrice(10, 35_000, "DE", badRealm)).toThrow("not found");
+    });
+
     it("returns full breakdown with PPP factors", () => {
       // JP buyer at DE seller: JP=1.08, DE=0.95, ratio=0.95/1.08=0.8796...
       // pppIncome = 50000 * 0.95 / 1.08 = 43981.48 → bracket ≤70000 → factor 1.0
