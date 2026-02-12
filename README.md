@@ -1,10 +1,10 @@
-# Fairify
+# Fairtide
 
-A minimalistic API that calculates fair prices for consumables based on income and shop location.
+A fair pricing API — prices rise and fall like the tide, so everyone gets a fair deal.
 
 ## How It Works
 
-Fairify adjusts prices using two factors:
+Fairtide adjusts prices using two factors:
 
 - **Income factor** — lower-income users pay proportionally less
 - **Location factor** — prices reflect the local cost of living
@@ -32,7 +32,7 @@ fairPrice = basePrice * incomeFactor * locationFactor
 ```bash
 # Clone the repository
 git clone <repo-url>
-cd fairify
+cd fairtide
 
 # Install dependencies
 bun install
@@ -139,7 +139,7 @@ PORT=8080 LOG_LEVEL=debug docker compose up -d
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3000` | Server port |
-| `DB_PATH` | `./data/fairify.db` | SQLite database path |
+| `DB_PATH` | `./data/fairtide.db` | SQLite database path |
 | `LOG_LEVEL` | `info` | Log level (`debug`, `info`, `warn`, `error`) |
 | `CORS_ORIGIN` | `*` | Allowed origins (comma-separated or `*`) |
 | `RATE_LIMIT_MAX` | `100` | Max requests per window |

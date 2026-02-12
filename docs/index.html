@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fairify — Fair Pricing API</title>
-  <meta name="description" content="Revenue-neutral fair pricing API. Adjust prices based on income and location — without losing money.">
-  <meta property="og:title" content="Fairify — Fair Pricing API">
-  <meta property="og:description" content="Revenue-neutral fair pricing API. Adjust prices based on income and location — without losing money.">
+  <title>Fairtide — Fair Pricing API</title>
+  <meta name="description" content="An API that adjusts prices based on income and location. Lower income pays less, higher income pays more. Revenue stays balanced.">
+  <meta property="og:title" content="Fairtide — Fair Pricing API">
+  <meta property="og:description" content="Prices rise and fall like the tide. An API for businesses that believe everyone deserves fair pricing.">
   <meta property="og:type" content="website">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
@@ -15,17 +15,35 @@
 
   <header class="hero">
     <div class="container">
-      <h1>Fairify</h1>
-      <p class="tagline">Fair pricing that doesn't cost you a thing.</p>
-      <p class="subtitle">An API that adjusts prices based on income and location — while keeping your revenue balanced.</p>
+      <p class="hero-badge">Free &amp; Open Source</p>
+      <h1>Fairtide</h1>
+      <p class="tagline">Prices that rise and fall like the tide.</p>
+      <p class="subtitle">An API that adjusts prices based on income and location — so lower-income customers pay less, higher-income pay a bit more, and your revenue stays balanced.</p>
       <div class="cta-group">
-        <a href="#how-it-works" class="btn btn-primary">How It Works</a>
-        <a href="https://github.com/ollilindenmayr/fairify" class="btn btn-secondary">View on GitHub</a>
+        <a href="#get-started" class="btn btn-primary">Get Your API Key</a>
+        <a href="https://github.com/ollilindenmayr/fairtide" class="btn btn-secondary">View on GitHub</a>
       </div>
     </div>
   </header>
 
-  <section id="how-it-works" class="section">
+  <section id="why" class="section">
+    <div class="container">
+      <h2>The Problem</h2>
+      <p class="section-intro">A $5 coffee means nothing to one person and everything to another. Fixed pricing ignores this reality.</p>
+      <div class="problem-solution">
+        <div class="ps-card">
+          <h3>Fixed prices exclude people</h3>
+          <p>A student in Lisbon and a banker in Zurich pay the same price. One can barely afford it, the other doesn't even notice. The gap between rich and poor keeps growing.</p>
+        </div>
+        <div class="ps-card ps-card-highlight">
+          <h3>Fairtide closes the gap</h3>
+          <p>One API call. You send the base price, the customer's income range, and their city. Fairtide returns a price that's fair — adjusted for what they can actually afford.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="section section-alt">
     <div class="container">
       <h2>How It Works</h2>
       <p class="section-intro">Three inputs, one fair price. Integrate with a single API call.</p>
@@ -33,17 +51,41 @@
         <div class="step">
           <div class="step-icon">1</div>
           <h3>Set Your Base Price</h3>
-          <p>You decide the standard price for your product — a coffee, a meal, a ticket. That's your anchor.</p>
+          <p>Your standard price — a coffee, a meal, a ticket, a subscription. That's your anchor.</p>
         </div>
         <div class="step">
           <div class="step-icon">2</div>
-          <h3>Customer Shares Income</h3>
-          <p>At checkout, the customer selects their income range. No verification needed — it's trust-based.</p>
+          <h3>Customer Shares Context</h3>
+          <p>At checkout, the customer selects their income range and location. Trust-based, no verification needed.</p>
         </div>
         <div class="step">
           <div class="step-icon">3</div>
-          <h3>API Returns Fair Price</h3>
-          <p>Fairify calculates an adjusted price using income and location factors. Lower income pays less, higher income pays a bit more.</p>
+          <h3>Get a Fair Price</h3>
+          <p>Fairtide calculates an adjusted price. Lower income pays less. Higher income pays a bit more. Your revenue balances out.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="use-cases" class="section">
+    <div class="container">
+      <h2>Built for Every Business</h2>
+      <p class="section-intro">From neighborhood cafes to global SaaS — fair pricing works everywhere.</p>
+      <div class="use-cases">
+        <div class="use-case">
+          <div class="use-case-icon">&#9749;</div>
+          <h3>Cafes &amp; Restaurants</h3>
+          <p>Let a student pay $3.50 for a coffee that costs a banker $5.50. Both feel good about it.</p>
+        </div>
+        <div class="use-case">
+          <div class="use-case-icon">&#127915;</div>
+          <h3>Events &amp; Ticketing</h3>
+          <p>Fill every seat. Early birds and lower-income attendees get better prices. Revenue stays on target.</p>
+        </div>
+        <div class="use-case">
+          <div class="use-case-icon">&#128187;</div>
+          <h3>SaaS &amp; Subscriptions</h3>
+          <p>Offer fair pricing tiers automatically. Expand into new markets without leaving money on the table.</p>
         </div>
       </div>
     </div>
@@ -52,11 +94,11 @@
   <section id="revenue-neutral" class="section section-alt">
     <div class="container">
       <h2>Revenue-Neutral by Design</h2>
-      <p class="section-intro">The question every business owner asks: "Won't I lose money?"</p>
+      <p class="section-intro">"Won't I lose money?" — No. That's the whole point.</p>
       <div class="balance-explanation">
         <div class="balance-text">
-          <p>Fairify tracks every transaction's delta — the difference between your base price and the fair price. When too many discounts accumulate, the algorithm automatically <strong>dampens</strong> future adjustments, nudging prices back toward your base price.</p>
-          <p>Over time, discounts given to lower-income customers are offset by premiums from higher-income customers. Your revenue stays balanced.</p>
+          <p>Fairtide tracks every transaction's delta — the difference between your base price and the fair price. When too many discounts accumulate, the algorithm automatically <strong>dampens</strong> future adjustments, nudging prices back toward your base price.</p>
+          <p>Over time, discounts for lower-income customers are offset by premiums from higher-income customers. Your revenue stays balanced.</p>
           <div class="balance-statuses">
             <div class="status-item status-balanced">
               <span class="status-dot"></span>
@@ -108,13 +150,37 @@
 }</code></pre>
         </div>
       </div>
-      <p class="api-link">Full API reference available at <a href="/v1/docs">Swagger UI</a></p>
     </div>
   </section>
 
-  <section id="get-started" class="section section-alt">
+  <section id="positioning" class="section section-alt">
+    <div class="container">
+      <h2>Why Fairtide?</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>Free &amp; Open Source</h3>
+          <p>MIT licensed. Self-host it, fork it, or use our hosted version. No vendor lock-in.</p>
+        </div>
+        <div class="feature">
+          <h3>API-First</h3>
+          <p>Clean REST API with OpenAPI 3.1 docs. Works with any language, any framework, any platform.</p>
+        </div>
+        <div class="feature">
+          <h3>Developer-Friendly</h3>
+          <p>Swagger UI built in. One endpoint to integrate. Bearer token auth. JSON in, JSON out.</p>
+        </div>
+        <div class="feature">
+          <h3>Realm Isolation</h3>
+          <p>Each business gets its own realm with separate balance tracking. Your data stays yours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="get-started" class="section">
     <div class="container">
       <h2>Get Started</h2>
+      <p class="section-intro">Three steps to fair pricing.</p>
       <div class="getting-started-steps">
         <div class="gs-step">
           <div class="gs-number">1</div>
@@ -130,14 +196,16 @@
           <div class="gs-content">
             <h3>Use Your API Key</h3>
             <p>Include the returned API key in every request as a Bearer token.</p>
+<pre><code><span class="kw">Authorization:</span> Bearer <span class="str">your-api-key</span></code></pre>
           </div>
         </div>
         <div class="gs-step">
           <div class="gs-number">3</div>
           <div class="gs-content">
-            <h3>Check Your Balance</h3>
-            <p>Monitor your realm's revenue balance anytime.</p>
-<pre><code><span class="kw">GET</span> /v1/realms/:id/balance</code></pre>
+            <h3>Calculate Fair Prices</h3>
+            <p>Send base price, income, and location. Get a fair price back.</p>
+<pre><code><span class="kw">POST</span> /v1/calculate
+{ <span class="key">"basePrice"</span>: <span class="num">4.50</span>, <span class="key">"annualIncome"</span>: <span class="num">28000</span>, <span class="key">"locationId"</span>: <span class="str">"berlin-de"</span> }</code></pre>
           </div>
         </div>
       </div>
@@ -148,11 +216,11 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-brand">
-          <strong>Fairify</strong>
-          <p>Fair pricing for everyone.</p>
+          <strong>Fairtide</strong>
+          <p>Closing the gap, one price at a time.</p>
         </div>
         <div class="footer-links">
-          <a href="https://github.com/ollilindenmayr/fairify">GitHub</a>
+          <a href="https://github.com/ollilindenmayr/fairtide">GitHub</a>
           <a href="/v1/docs">API Docs</a>
           <a href="/v1/doc">OpenAPI Spec</a>
         </div>

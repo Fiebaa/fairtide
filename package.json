@@ -1,7 +1,7 @@
 {
-  "name": "fairify",
+  "name": "fairtide",
   "version": "0.1.0",
-  "description": "A minimalistic API to calculate fair prices based on income and location",
+  "description": "A fair pricing API — prices rise and fall like the tide, so everyone gets a fair deal",
   "type": "module",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
@@ -13,7 +13,7 @@
   },
   "keywords": ["fair-pricing", "api", "hono"],
   "author": "",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "@hono/swagger-ui": "^0.5.3",
     "@hono/zod-openapi": "^1.2.1",
