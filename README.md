@@ -167,4 +167,4 @@ PORT=8080 LOG_LEVEL=debug docker compose up -d
 
 ## License
 
-ISC
+AGPL-3.0 — see [LICENSE](LICENSE) for details.
