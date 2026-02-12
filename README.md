@@ -4,24 +4,28 @@ A fair pricing API — prices rise and fall like the tide, so everyone gets a fa
 
 ## How It Works
 
-Fairtide adjusts prices using two factors:
+Fairtide adjusts prices using PPP (Purchasing Power Parity) normalization:
 
-- **Income factor** — lower-income users pay proportionally less
-- **Location factor** — prices reflect the local cost of living
+1. Your reported income is converted to US-equivalent purchasing power using your country's PPP factor
+2. The PPP-adjusted income determines an income factor via bracket lookup
+3. The fair price is calculated from the base price and income factor
 
 ```
-fairPrice = basePrice * incomeFactor * locationFactor
+pppIncome = annualIncome * pppFactor(countryCode)
+fairPrice = basePrice * incomeFactor(pppIncome)
 ```
 
-### Default Income Brackets
+### Income Brackets (PPP-Adjusted USD)
 
-| Annual Income | Factor |
-|---------------|--------|
-| Up to 20,000  | 0.70   |
-| 20,001-40,000 | 0.85   |
-| 40,001-70,000 | 1.00   |
-| 70,001-100,000| 1.10   |
-| Over 100,000  | 1.20   |
+| PPP-Adjusted Income | Factor |
+|---------------------|--------|
+| Up to 20,000        | 0.70   |
+| 20,001-40,000       | 0.85   |
+| 40,001-70,000       | 1.00   |
+| 70,001-100,000      | 1.10   |
+| Over 100,000        | 1.20   |
+
+~180 countries supported via ISO 3166-1 alpha-2 codes (e.g. "DE", "US", "NG").
 
 ## Prerequisites
 
@@ -61,7 +65,7 @@ POST /v1/calculate
 {
   "basePrice": 10.00,
   "annualIncome": 35000,
-  "locationId": "berlin-de"
+  "countryCode": "DE"
 }
 ```
 
@@ -69,12 +73,12 @@ POST /v1/calculate
 
 ```json
 {
-  "fairPrice": 8.93,
+  "fairPrice": 8.50,
   "breakdown": {
     "basePrice": 10.00,
+    "pppAdjustedIncome": 33250,
     "incomeFactor": 0.85,
-    "locationFactor": 1.05,
-    "fairPrice": 8.93
+    "fairPrice": 8.50
   }
 }
 ```
@@ -98,25 +102,6 @@ OpenAPI 3.1 spec at:
 ```
 GET /v1/doc
 ```
-
-## Available Locations
-
-The database is seeded with 12 cities:
-
-| ID | City | Country | Cost of Living Index |
-|----|------|---------|---------------------|
-| zurich-ch | Zurich | CH | 1.35 |
-| new-york-us | New York | US | 1.25 |
-| london-gb | London | GB | 1.20 |
-| sydney-au | Sydney | AU | 1.15 |
-| tokyo-jp | Tokyo | JP | 1.10 |
-| vienna-at | Vienna | AT | 1.10 |
-| munich-de | Munich | DE | 1.08 |
-| berlin-de | Berlin | DE | 1.05 |
-| lisbon-pt | Lisbon | PT | 0.85 |
-| sao-paulo-br | Sao Paulo | BR | 0.75 |
-| bangkok-th | Bangkok | TH | 0.60 |
-| lagos-ng | Lagos | NG | 0.45 |
 
 ## Docker
 
@@ -154,7 +139,7 @@ PORT=8080 LOG_LEVEL=debug docker compose up -d
 | `bun test` | Run tests |
 | `bun run db:generate` | Generate Drizzle migrations |
 | `bun run db:migrate` | Apply database migrations |
-| `bun run db:seed` | Seed location data |
+| `bun run db:seed` | Seed demo realm |
 
 ## Tech Stack
 

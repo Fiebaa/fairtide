@@ -5,6 +5,7 @@
   "enabledPlugins": {
     "sw-backend@specweave": true,
     "commit-commands@claude-plugins-official": true,
-    "sw-infra@specweave": true
+    "sw-infra@specweave": true,
+    "sw-github@specweave": true
   }
 }

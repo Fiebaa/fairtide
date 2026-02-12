@@ -1,3 +1,6 @@
+// Income thresholds are in PPP-adjusted USD (purchasing power parity).
+// Raw income is first converted via ppp-factors.ts before bracket lookup.
+
 export interface IncomeBracket {
   maxIncome: number | null; // null = no upper limit
   factor: number;

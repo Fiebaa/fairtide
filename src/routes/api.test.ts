@@ -36,7 +36,7 @@ describe("POST /v1/calculate", () => {
       body: JSON.stringify({
         basePrice: 10,
         annualIncome: 35000,
-        locationId: "berlin-de",
+        countryCode: "DE",
       }),
     });
     expect(res.status).toBe(401);
@@ -49,14 +49,15 @@ describe("POST /v1/calculate", () => {
       body: JSON.stringify({
         basePrice: 10,
         annualIncome: 35000,
-        locationId: "berlin-de",
+        countryCode: "DE",
       }),
     });
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.fairPrice).toBeGreaterThan(0);
+    // DE PPP factor = 0.95, pppIncome = 35000 * 0.95 = 33250 → bracket ≤40000 → factor 0.85
+    expect(body.fairPrice).toBe(8.5);
+    expect(body.breakdown.pppAdjustedIncome).toBe(33250);
     expect(body.breakdown.incomeFactor).toBe(0.85);
-    expect(body.breakdown.locationFactor).toBe(1.05);
     expect(body.balanceStatus).toBeDefined();
   });
 
@@ -67,7 +68,7 @@ describe("POST /v1/calculate", () => {
       body: JSON.stringify({
         basePrice: -5,
         annualIncome: 35000,
-        locationId: "berlin-de",
+        countryCode: "DE",
       }),
     });
     expect(res.status).toBe(400);
@@ -84,14 +85,14 @@ describe("POST /v1/calculate", () => {
     expect(res.status).toBe(400);
   });
 
-  it("returns 404 for unknown location", async () => {
+  it("returns 404 for unknown country code", async () => {
     const res = await authRequest("/v1/calculate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         basePrice: 10,
         annualIncome: 35000,
-        locationId: "atlantis",
+        countryCode: "XX",
       }),
     });
     expect(res.status).toBe(404);
@@ -106,7 +107,7 @@ describe("POST /v1/calculate", () => {
       body: JSON.stringify({
         basePrice: 100,
         annualIncome: 50000,
-        locationId: "berlin-de",
+        countryCode: "DE",
       }),
     });
     expect(res.status).toBe(200);
@@ -269,13 +270,13 @@ describe("Revenue-neutral balancing", () => {
       body: JSON.stringify({
         basePrice: 100,
         annualIncome: 15000,
-        locationId: "berlin-de",
+        countryCode: "DE",
       }),
     });
     expect(res.status).toBe(200);
     const body = await res.json();
 
-    // Standard factor for 15k income is 0.7
+    // DE PPP factor = 0.95, pppIncome = 15000 * 0.95 = 14250 → bracket ≤20000 → factor 0.7
     // With balance -30, threshold -50: D = 1 - (-30 / -50) = 0.4
     // Adjusted = 1.0 + (0.7 - 1.0) * 0.4 = 1.0 - 0.12 = 0.88
     expect(body.breakdown.incomeFactor).toBe(0.7);
